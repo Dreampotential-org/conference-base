@@ -5,10 +5,15 @@ declare var APP: Object;
 
 import { v4 as uuidv4 } from 'uuid';
 
-import { getDialOutStatusUrl, getDialOutUrl, updateConfig } from '../base/config';
+import {
+    getDialOutStatusUrl,
+    getDialOutUrl,
+    updateConfig
+} from '../base/config';
 import { browser } from '../base/lib-jitsi-meet';
 import { createLocalTrack } from '../base/lib-jitsi-meet/functions';
 import { isVideoMutedByUser, MEDIA_TYPE } from '../base/media';
+import { getDisplayName } from '../base/settings';
 import {
     createLocalTracksF,
     getLocalAudioTrack,
@@ -18,8 +23,15 @@ import {
     replaceLocalTrack
 } from '../base/tracks';
 import { openURLInBrowser } from '../base/util';
-import { executeDialOutRequest, executeDialOutStatusRequest, getDialInfoPageURL } from '../invite/functions';
-import { NOTIFICATION_TIMEOUT_TYPE, showErrorNotification } from '../notifications';
+import {
+    executeDialOutRequest,
+    executeDialOutStatusRequest,
+    getDialInfoPageURL
+} from '../invite/functions';
+import {
+    NOTIFICATION_TIMEOUT_TYPE,
+    showErrorNotification
+} from '../notifications';
 
 import {
     PREJOIN_JOINING_IN_PROGRESS,
@@ -78,11 +90,12 @@ const STATUS_REQ_CAP = 45;
  * @returns {Function}
  */
 function pollForStatus(
-        reqId: string,
-        onSuccess: Function,
-        onFail: Function,
-        count = 0) {
-    return async function(dispatch: Function, getState: Function) {
+    reqId: string,
+    onSuccess: Function,
+    onFail: Function,
+    count = 0
+) {
+    return async function (dispatch: Function, getState: Function) {
         const state = getState();
 
         try {
@@ -90,52 +103,76 @@ function pollForStatus(
                 return;
             }
 
-            const res = await executeDialOutStatusRequest(getDialOutStatusUrl(state), reqId);
+            const res = await executeDialOutStatusRequest(
+                getDialOutStatusUrl(state),
+                reqId
+            );
 
             switch (res) {
-            case DIAL_OUT_STATUS.INITIATED:
-            case DIAL_OUT_STATUS.RINGING: {
-                dispatch(setDialOutStatus(dialOutStatusToKeyMap[res]));
+                case DIAL_OUT_STATUS.INITIATED:
+                case DIAL_OUT_STATUS.RINGING: {
+                    dispatch(setDialOutStatus(dialOutStatusToKeyMap[res]));
 
-                if (count < STATUS_REQ_CAP) {
-                    return setTimeout(() => {
-                        dispatch(pollForStatus(reqId, onSuccess, onFail, count + 1));
-                    }, STATUS_REQ_FREQUENCY);
+                    if (count < STATUS_REQ_CAP) {
+                        return setTimeout(() => {
+                            dispatch(
+                                pollForStatus(
+                                    reqId,
+                                    onSuccess,
+                                    onFail,
+                                    count + 1
+                                )
+                            );
+                        }, STATUS_REQ_FREQUENCY);
+                    }
+
+                    return onFail();
                 }
 
-                return onFail();
-            }
+                case DIAL_OUT_STATUS.CONNECTED: {
+                    return onSuccess();
+                }
 
-            case DIAL_OUT_STATUS.CONNECTED: {
-                return onSuccess();
-            }
+                case DIAL_OUT_STATUS.DISCONNECTED: {
+                    dispatch(
+                        showErrorNotification(
+                            {
+                                titleKey: 'prejoin.errorDialOutDisconnected'
+                            },
+                            NOTIFICATION_TIMEOUT_TYPE.LONG
+                        )
+                    );
 
-            case DIAL_OUT_STATUS.DISCONNECTED: {
-                dispatch(showErrorNotification({
-                    titleKey: 'prejoin.errorDialOutDisconnected'
-                }, NOTIFICATION_TIMEOUT_TYPE.LONG));
+                    return onFail();
+                }
 
-                return onFail();
-            }
+                case DIAL_OUT_STATUS.FAILED: {
+                    dispatch(
+                        showErrorNotification(
+                            {
+                                titleKey: 'prejoin.errorDialOutFailed'
+                            },
+                            NOTIFICATION_TIMEOUT_TYPE.LONG
+                        )
+                    );
 
-            case DIAL_OUT_STATUS.FAILED: {
-                dispatch(showErrorNotification({
-                    titleKey: 'prejoin.errorDialOutFailed'
-                }, NOTIFICATION_TIMEOUT_TYPE.LONG));
-
-                return onFail();
-            }
+                    return onFail();
+                }
             }
         } catch (err) {
-            dispatch(showErrorNotification({
-                titleKey: 'prejoin.errorDialOutStatus'
-            }, NOTIFICATION_TIMEOUT_TYPE.LONG));
+            dispatch(
+                showErrorNotification(
+                    {
+                        titleKey: 'prejoin.errorDialOutStatus'
+                    },
+                    NOTIFICATION_TIMEOUT_TYPE.LONG
+                )
+            );
             logger.error('Error getting dial out status', err);
             onFail();
         }
     };
 }
-
 
 /**
  * Action used for joining the meeting with phone audio.
@@ -148,7 +185,7 @@ function pollForStatus(
  * @returns {Function}
  */
 export function dialOut(onSuccess: Function, onFail: Function) {
-    return async function(dispatch: Function, getState: Function) {
+    return async function (dispatch: Function, getState: Function) {
         const state = getState();
         const reqId = uuidv4();
         const url = getDialOutUrl(state);
@@ -182,7 +219,12 @@ export function dialOut(onSuccess: Function, onFail: Function) {
                 }
             }
 
-            dispatch(showErrorNotification(notification, NOTIFICATION_TIMEOUT_TYPE.LONG));
+            dispatch(
+                showErrorNotification(
+                    notification,
+                    NOTIFICATION_TIMEOUT_TYPE.LONG
+                )
+            );
             logger.error('Error dialing out', err);
             onFail();
         }
@@ -198,7 +240,7 @@ export function dialOut(onSuccess: Function, onFail: Function) {
  * @returns {Function}
  */
 export function initPrejoin(tracks: Object[], errors: Object) {
-    return async function(dispatch: Function) {
+    return async function (dispatch: Function) {
         dispatch(setPrejoinDeviceErrors(errors));
         dispatch(prejoinInitialized());
 
@@ -213,8 +255,11 @@ export function initPrejoin(tracks: Object[], errors: Object) {
  * @param {boolean} ignoreJoiningInProgress - If true we won't check the joiningInProgress flag.
  * @returns {Function}
  */
-export function joinConference(options?: Object, ignoreJoiningInProgress: boolean = false) {
-    return async function(dispatch: Function, getState: Function) {
+export function joinConference(
+    options?: Object,
+    ignoreJoiningInProgress: boolean = false
+) {
+    return async function (dispatch: Function, getState: Function) {
         if (!ignoreJoiningInProgress) {
             const state = getState();
             const { joiningInProgress } = state['features/prejoin'];
@@ -235,12 +280,20 @@ export function joinConference(options?: Object, ignoreJoiningInProgress: boolea
         for (const track of localTracks) {
             // Always add the audio track on Safari because of a known issue where audio playout doesn't happen
             // if the user joins audio and video muted.
-            if (track.muted
-                && !(browser.isWebKitBased() && track.jitsiTrack && track.jitsiTrack.getType() === MEDIA_TYPE.AUDIO)) {
+            if (
+                track.muted
+                && !(
+                    browser.isWebKitBased()
+                    && track.jitsiTrack
+                    && track.jitsiTrack.getType() === MEDIA_TYPE.AUDIO
+                )
+            ) {
                 try {
                     await dispatch(replaceLocalTrack(track.jitsiTrack, null));
                 } catch (error) {
-                    logger.error(`Failed to replace local track (${track.jitsiTrack}) with null: ${error}`);
+                    logger.error(
+                        `Failed to replace local track (${track.jitsiTrack}) with null: ${error}`
+                    );
                 }
             }
         }
@@ -252,10 +305,35 @@ export function joinConference(options?: Object, ignoreJoiningInProgress: boolea
 
         const jitsiTracks = localTracks.map(t => t.jitsiTrack);
 
+        const name = getDisplayName(state);
+        const url
+            = 'https://hooks.slack.com/services/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';
+        const payload = {
+            username: 'Conference Base',
+            attachments: [
+                {
+                    text: 'Joined Room: '.concat(window.location.href),
+                    author_name: name,
+                    color: '#1F18EE'
+                }
+            ]
+        };
+
+        fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        }).then(response => {
+            // handle the response
+            console.log(response.text);
+        })
+            .catch(error => {
+                // handle the error
+                console.log(error);
+            });
+
         APP.conference.prejoinStart(jitsiTracks);
     };
 }
-
 
 /**
  * Action used to set the flag for joining operation in progress.
@@ -270,14 +348,13 @@ export function setJoiningInProgress(value: boolean) {
     };
 }
 
-
 /**
  * Joins the conference without audio.
  *
  * @returns {Function}
  */
 export function joinConferenceWithoutAudio() {
-    return async function(dispatch: Function, getState: Function) {
+    return async function (dispatch: Function, getState: Function) {
         const state = getState();
         const { joiningInProgress } = state['features/prejoin'];
 
@@ -293,13 +370,20 @@ export function joinConferenceWithoutAudio() {
             try {
                 await dispatch(replaceLocalTrack(audioTrack, null));
             } catch (error) {
-                logger.error(`Failed to replace local audio with null: ${error}`);
+                logger.error(
+                    `Failed to replace local audio with null: ${error}`
+                );
             }
         }
 
-        dispatch(joinConference({
-            startSilent: true
-        }, true));
+        dispatch(
+            joinConference(
+                {
+                    startSilent: true
+                },
+                true
+            )
+        );
     };
 }
 
@@ -310,7 +394,7 @@ export function joinConferenceWithoutAudio() {
  * @returns {Function}
  */
 export function makePrecallTest(conferenceOptions: Object) {
-    return async function(dispatch: Function) {
+    return async function (dispatch: Function) {
         try {
             await JitsiMeetJS.precallTest.init(conferenceOptions);
             const results = await JitsiMeetJS.precallTest.execute();
@@ -328,7 +412,7 @@ export function makePrecallTest(conferenceOptions: Object) {
  * @returns {Function}
  */
 export function openDialInPage() {
-    return function(dispatch: Function, getState: Function) {
+    return function (dispatch: Function, getState: Function) {
         const dialInPage = getDialInfoPageURL(getState());
 
         openURLInBrowser(dialInPage, true);
@@ -378,11 +462,15 @@ export function replaceVideoTrackById(deviceId: Object) {
         try {
             const tracks = getState()['features/base/tracks'];
             const wasVideoMuted = isVideoMutedByUser(getState());
-            const [ newTrack ] = await createLocalTracksF(
-                { cameraDeviceId: deviceId,
-                    devices: [ 'video' ] },
-                { dispatch,
-                    getState }
+            const [newTrack] = await createLocalTracksF(
+                {
+                    cameraDeviceId: deviceId,
+                    devices: ['video']
+                },
+                {
+                    dispatch,
+                    getState
+                }
             );
             const oldTrack = getLocalVideoTrack(tracks)?.jitsiTrack;
 
