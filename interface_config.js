@@ -260,9 +260,11 @@ var interfaceConfig = {
     // Allow all above example options to include a trailing comma and
     // prevent fear when commenting out the last value.
     // eslint-disable-next-line sort-keys
-    makeJsonParserHappy: 'even if last key had a trailing comma'
+    makeJsonParserHappy: 'even if last key had a trailing comma',
 
     // No configuration value should follow this line.
+
+    SOCKET_HOST: 'http://localhost:4000'
 };
 
 /* eslint-enable no-unused-vars, no-var, max-len */

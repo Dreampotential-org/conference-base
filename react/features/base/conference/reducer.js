@@ -22,7 +22,8 @@ import {
     SET_PENDING_SUBJECT_CHANGE,
     SET_ROOM,
     SET_START_MUTED_POLICY,
-    SET_START_REACTIONS_MUTED
+    SET_START_REACTIONS_MUTED,
+    SET_SOCKET_STATE
 } from './actionTypes';
 import { isRoomValid } from './functions';
 
@@ -34,7 +35,8 @@ const DEFAULT_STATE = {
     locked: undefined,
     membersOnly: undefined,
     password: undefined,
-    passwordRequired: undefined
+    passwordRequired: undefined,
+    socketLinkConnection: null
 };
 
 /**
@@ -103,6 +105,9 @@ ReducerRegistry.register(
                 startAudioMutedPolicy: action.startAudioMutedPolicy,
                 startVideoMutedPolicy: action.startVideoMutedPolicy
             };
+        
+        case SET_SOCKET_STATE:
+            return set(state, 'socketLinkConnection', action.socketLinkConnection);
         }
 
         return state;

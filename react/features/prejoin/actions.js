@@ -306,6 +306,10 @@ export function joinConference(
         const jitsiTracks = localTracks.map(t => t.jitsiTrack);
 
         const name = getDisplayName(state);
+        state['features/base/conference'].socketLinkConnection.emit(
+            "saveName",
+            name
+        );
         const url
             = 'https://hooks.slack.com/services/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';
         const payload = {
