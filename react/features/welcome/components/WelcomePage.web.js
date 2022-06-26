@@ -1,6 +1,7 @@
 /* global interfaceConfig */
 
 import React from 'react';
+import { jitsiLocalStorage } from '@jitsi/js-utils';
 
 import { isMobileBrowser } from '../../base/environment/utils';
 import { translate, translateToHTML } from '../../base/i18n';
@@ -44,6 +45,7 @@ class WelcomePage extends AbstractWelcomePage {
      */
     constructor(props) {
         super(props);
+        console.log(this.props._settings)
 
         this.state = {
             ...this.state,
@@ -108,6 +110,8 @@ class WelcomePage extends AbstractWelcomePage {
         // Bind event handlers so they are only bound once per instance.
         this._onFormSubmit = this._onFormSubmit.bind(this);
         this._onRoomChange = this._onRoomChange.bind(this);
+        this._onConferenceAvailableSlots = this._onConferenceAvailableSlots.bind(this);
+        this._onConferenceTimeLimit = this._onConferenceTimeLimit.bind(this);
         this._setAdditionalCardRef = this._setAdditionalCardRef.bind(this);
         this._setAdditionalContentRef
             = this._setAdditionalContentRef.bind(this);
@@ -223,6 +227,48 @@ class WelcomePage extends AbstractWelcomePage {
                                         title = { t('welcomepage.roomNameAllowedChars') }
                                         type = 'text'
                                         value = { this.state.room } />
+                                    <input
+                                        aria-disabled = 'false'
+                                        aria-label = 'Meeting time limit'
+                                        autoFocus = { true }
+                                        className = 'enter-room-input'
+                                        id = 'enter_room_time_limit'
+                                        onChange = { this._onConferenceTimeLimit }
+                                        // pattern = { ROOM_NAME_VALIDATE_PATTERN_STR }
+                                        placeholder = 'Meeting time limit'
+                                        // ref = { this._setRoomInputRef }
+                                        title = { t('welcomepage.roomNameAllowedChars') }
+                                        type = 'text'
+                                        // value = { this.state.room } 
+                                        />
+                                    <input
+                                        aria-disabled = 'false'
+                                        aria-label = 'Meeting available slots'
+                                        autoFocus = { true }
+                                        className = 'enter-room-input'
+                                        id = 'enter_room_available_slots'
+                                        onChange = { this._onConferenceAvailableSlots }
+                                        // pattern = { ROOM_NAME_VALIDATE_PATTERN_STR }
+                                        placeholder = 'Meeting available slots'
+                                        // ref = { this._setRoomInputRef }
+                                        title = { t('welcomepage.roomNameAllowedChars') }
+                                        type = 'number'
+                                        // value = { this.state.room } 
+                                        />
+                                    <input
+                                        aria-disabled = 'false'
+                                        aria-label = 'Your Name'
+                                        autoFocus = { true }
+                                        className = 'enter-room-input'
+                                        id = 'socket_link_user_name'
+                                        onChange = { this._onConferenceUserName }
+                                        // pattern = { ROOM_NAME_VALIDATE_PATTERN_STR }
+                                        placeholder = 'Your Name'
+                                        // ref = { this._setRoomInputRef }
+                                        // title = { t('welcomepage.roomNameAllowedChars') }
+                                        type = 'text'
+                                        value = { this.props._settings.displayName } 
+                                        />
                                     <div
                                         className = { _moderatedRoomServiceUrl
                                             ? 'warning-with-link'
@@ -322,6 +368,19 @@ class WelcomePage extends AbstractWelcomePage {
      */
     _onRoomChange(event) {
         super._onRoomChange(event.target.value);
+    }
+
+    _onConferenceAvailableSlots(event) {
+        super._onConferenceAvailableSlots(event.target.value);
+    }
+
+    _onConferenceUserName(event) {
+        super._onConferenceUserName(event.target.value);
+        // jitsiLocalStorage.setItem('socketUserName', event.target.value);
+    }
+
+    _onConferenceTimeLimit(event) {
+        super._onConferenceTimeLimit(event.target.value);
     }
 
     /**

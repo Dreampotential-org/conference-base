@@ -1,11 +1,11 @@
 // @flow
-
 import { generateRoomWithoutSeparator } from '@jitsi/js-utils/random';
 import { Component } from 'react';
 import type { Dispatch } from 'redux';
 
 import { createWelcomePageEvent, sendAnalytics } from '../../analytics';
 import { appNavigate } from '../../app/actions';
+import { setSocketLinkConnectionObject } from '../../base/conference';
 import isInsecureRoomName from '../../base/util/isInsecureRoomName';
 import { isCalendarEnabled } from '../../calendar-sync';
 import { isRecentListEnabled } from '../../recent-list/functions';
@@ -48,7 +48,11 @@ export type Props = {
     /**
      * The Redux dispatch Function.
      */
-    dispatch: Dispatch<any>
+    dispatch: Dispatch<any>,
+
+    // Socket link connection object
+
+    _socketConnection: Object
 };
 
 /**
@@ -79,7 +83,11 @@ export class AbstractWelcomePage<P: Props> extends Component<P, *> {
         joining: false,
         room: '',
         roomPlaceholder: '',
-        updateTimeoutId: undefined
+        updateTimeoutId: undefined,
+        conferenceTimeLimit: '',
+        conferenceAvailableSlots: undefined,
+        socketLinkConnection: undefined,
+        socketLinkUserName: ''
     };
 
     /**
@@ -96,6 +104,9 @@ export class AbstractWelcomePage<P: Props> extends Component<P, *> {
             = this._animateRoomnameChanging.bind(this);
         this._onJoin = this._onJoin.bind(this);
         this._onRoomChange = this._onRoomChange.bind(this);
+        this._onConferenceAvailableSlots = this._onConferenceAvailableSlots.bind(this);
+        this._onConferenceUserName = this._onConferenceUserName.bind(this);
+        this._onConferenceTimeLimit = this._onConferenceTimeLimit.bind(this);
         this._renderInsecureRoomNameWarning = this._renderInsecureRoomNameWarning.bind(this);
         this._updateRoomname = this._updateRoomname.bind(this);
     }
@@ -192,15 +203,62 @@ export class AbstractWelcomePage<P: Props> extends Component<P, *> {
 
             // By the time the Promise of appNavigate settles, this component
             // may have already been unmounted.
+
+            APP.socket.emit(
+                "saveName",
+                {
+                    "name": this.state.socketLinkUserName
+                }
+            )
+
+            APP.socket.emit(
+                "createConference", {
+                    "conferenceName": window.location.href.concat(room),
+                    "timeLimit": this.state.conferenceTimeLimit,
+                    "slots": this.state.conferenceAvailableSlots
+                }
+            )
+            APP.socket.emit(
+                "joinRoom",
+                {"room": window.location.href}
+            );
+            const url
+                = 'https://hooks.slack.com/services/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';
+            const payload = {
+                username: 'Conference Base',
+                attachments: [
+                    {
+                        text: 'Joined Room: '.concat(window.location.href),
+                        author_name: name,
+                        color: '#1F18EE'
+                    }
+                ]
+            };
+    
+            fetch(url, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            }).then(response => {
+                // handle the response
+                console.log(response.text);
+            })
+            .catch(error => {
+                // handle the error
+                console.log(error);
+            });
+
             const onAppNavigateSettled
                 = () => this._mounted && this.setState({ joining: false });
-
             this.props.dispatch(appNavigate(room))
                 .then(onAppNavigateSettled, onAppNavigateSettled);
+                   
         }
     }
 
     _onRoomChange: (string) => void;
+    _onConferenceAvailableSlots: (integer) => void;
+    _onConferenceTimeLimit: (string) => void;
+    _onConferenceUserName: (string) => void;
 
     /**
      * Handles 'change' event for the room name text input field.
@@ -214,6 +272,24 @@ export class AbstractWelcomePage<P: Props> extends Component<P, *> {
         this.setState({
             room: value,
             insecureRoomName: this.props._enableInsecureRoomNameWarning && value && isInsecureRoomName(value)
+        });
+    }
+
+    _onConferenceAvailableSlots(value: integer) {
+        this.setState({
+            conferenceAvailableSlots: value
+        });
+    }
+
+    _onConferenceUserName(value: string) {
+        this.setState({
+            socketLinkUserName: value
+        })
+    }
+
+    _onConferenceTimeLimit(value: string) {
+        this.setState({
+            conferenceTimeLimit: value
         });
     }
 
@@ -266,12 +342,14 @@ export class AbstractWelcomePage<P: Props> extends Component<P, *> {
  * @returns {Props}
  */
 export function _mapStateToProps(state: Object) {
+
     return {
         _calendarEnabled: isCalendarEnabled(state),
         _enableInsecureRoomNameWarning: state['features/base/config'].enableInsecureRoomNameWarning || false,
         _moderatedRoomServiceUrl: state['features/base/config'].moderatedRoomServiceUrl,
         _recentListEnabled: isRecentListEnabled(),
         _room: state['features/base/conference'].room,
-        _settings: state['features/base/settings']
+        _settings: state['features/base/settings'],
+        _socketConnection: state['features/base/conference'].socketLinkConnection
     };
 }

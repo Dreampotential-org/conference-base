@@ -306,34 +306,42 @@ export function joinConference(
         const jitsiTracks = localTracks.map(t => t.jitsiTrack);
 
         const name = getDisplayName(state);
-        state['features/base/conference'].socketLinkConnection.emit(
-            "saveName",
-            name
-        );
-        const url
-            = 'https://hooks.slack.com/services/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';
-        const payload = {
-            username: 'Conference Base',
-            attachments: [
-                {
-                    text: 'Joined Room: '.concat(window.location.href),
-                    author_name: name,
-                    color: '#1F18EE'
-                }
-            ]
-        };
 
-        fetch(url, {
-            method: 'POST',
-            body: JSON.stringify(payload)
-        }).then(response => {
-            // handle the response
-            console.log(response.text);
-        })
-            .catch(error => {
-                // handle the error
-                console.log(error);
-            });
+        console.log('in actions:::', getState()['features/base/conference'])
+        
+        APP.socket.emit(
+            "saveName",
+            {"name": name}
+        );
+
+        // APP.socket.emit(
+        //     "joinRoom",
+        //     {"room": window.location.href}
+        // );
+        // const url
+        //     = 'https://hooks.slack.com/services/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';
+        // const payload = {
+        //     username: 'Conference Base',
+        //     attachments: [
+        //         {
+        //             text: 'Joined Room: '.concat(window.location.href),
+        //             author_name: name,
+        //             color: '#1F18EE'
+        //         }
+        //     ]
+        // };
+
+        // fetch(url, {
+        //     method: 'POST',
+        //     body: JSON.stringify(payload)
+        // }).then(response => {
+        //     // handle the response
+        //     console.log(response.text);
+        // })
+        // .catch(error => {
+        //     // handle the error
+        //     console.log(error);
+        // });
 
         APP.conference.prejoinStart(jitsiTracks);
     };

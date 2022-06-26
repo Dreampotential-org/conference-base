@@ -25,6 +25,7 @@ MiddlewareRegistry.register(store => next => action => {
 
     case SET_ROOM:
         return _setRoom(store, next, action);
+
     }
 
     return next(action);

@@ -843,7 +843,7 @@ export default {
             // get populated in case of an initial gUM acceptance; otherwise
             // they may remain as empty strings.
             this._initDeviceList(true);
-
+            
             if (isPrejoinPageVisible(APP.store.getState())) {
                 return APP.store.dispatch(initPrejoin(tracks, errors));
             }
@@ -1427,6 +1427,7 @@ export default {
     },
 
     _createRoom(localTracks) {
+        
         room = connection.initJitsiConference(APP.conference.roomName, this._getConferenceOptions());
 
         // Filter out the tracks that are muted (except on Safari).

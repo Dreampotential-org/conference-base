@@ -2,7 +2,6 @@
 
 import _ from 'lodash';
 import React from 'react';
-import io from "socket.io-client";
 
 import VideoLayout from '../../../../../modules/UI/videolayout/VideoLayout';
 import { getConferenceNameForTitle } from '../../../base/conference';
@@ -36,7 +35,6 @@ import { default as Notice } from './Notice';
 
 declare var APP: Object;
 declare var interfaceConfig: Object;
-declare var config: Object;
 
 /**
  * DOM events for when full screen mode has changed. Different browsers need
@@ -169,20 +167,6 @@ class Conference extends AbstractConference<Props, *> {
      */
     componentDidMount() {
         document.title = `${this.props._roomName} | ${interfaceConfig.APP_NAME}`;
-        console.log("url::", interfaceConfig.SOCKET_HOST);
-        if (interfaceConfig.SOCKET_HOST === undefined) {
-            interfaceConfig.SOCKET_HOST = "http://localhost:4000";
-        }
-        console.log("url::", interfaceConfig.SOCKET_HOST);
-        var socket = io.connect(interfaceConfig.SOCKET_HOST);
-        this.props.dispatch(setSocketLinkConnectionObject(socket));
-        // roomName = this.props._roomName
-        // socket.emit(
-        //     "joinRoom", {
-        //         "room": roomName,
-        //         "timeLimit": 12
-        //     }
-        // );
         this._start();
     }
 
