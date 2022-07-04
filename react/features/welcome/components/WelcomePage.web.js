@@ -22,11 +22,83 @@ import Tabs from './Tabs';
  */
 export const ROOM_NAME_VALIDATE_PATTERN_STR = '^[^?&:\u0022\u0027%#]+$';
 
-/**
- * The Web container rendering the welcome page.
- *
- * @augments AbstractWelcomePage
- */
+function UserNameForm(props) {
+    return (
+        // <form onSubmit = { this._onNameSubmit }>
+        <form onSubmit = { props.onNameSubmit }>
+        <input
+            aria-disabled = 'false'
+            aria-label = 'Your Name'
+            autoFocus = { true }
+            className = 'enter-room-input'
+            id = 'socket_link_user_name'
+            onChange = { props.onChangeName }
+            // pattern = { ROOM_NAME_VALIDATE_PATTERN_STR }
+            placeholder = 'Your Name'
+            // ref = { this._setRoomInputRef }
+            // title = { t('welcomepage.roomNameAllowedChars') }
+            type = 'text'
+            value = { props.displayName } 
+        />
+        
+        </form>
+    );
+}
+
+function RoomDetailsForm(props) {
+    return (
+        <form onSubmit = { props.onFormSubmit }>
+        <input
+            aria-disabled = 'false'
+            aria-label = 'Meeting name input'
+            autoFocus = { true }
+            className = 'enter-room-input'
+            id = 'enter_room_field'
+            onChange = { props.onRoomChange }
+            pattern = { ROOM_NAME_VALIDATE_PATTERN_STR }
+            placeholder = { props.roomPlaceholder }
+            ref = { props.setRoomInputRef }
+            title = { t('welcomepage.roomNameAllowedChars') }
+            type = 'text'
+            value = { props.room } />
+        <input
+            aria-disabled = 'false'
+            aria-label = 'Meeting time limit'
+            autoFocus = { true }
+            className = 'enter-room-input'
+            id = 'enter_room_time_limit'
+            onChange = { props.onConferenceTimeLimit }
+            // pattern = { ROOM_NAME_VALIDATE_PATTERN_STR }
+            placeholder = 'Meeting time limit'
+            // ref = { this._setRoomInputRef }
+            title = { t('welcomepage.roomNameAllowedChars') }
+            type = 'text'
+            // value = { this.state.room } 
+            />
+        <input
+            aria-disabled = 'false'
+            aria-label = 'Meeting available slots'
+            autoFocus = { true }
+            className = 'enter-room-input'
+            id = 'enter_room_available_slots'
+            onChange = { props.onConferenceAvailableSlots }
+            // pattern = { ROOM_NAME_VALIDATE_PATTERN_STR }
+            placeholder = 'Meeting available slots'
+            // ref = { this._setRoomInputRef }
+            title = { t('welcomepage.roomNameAllowedChars') }
+            type = 'number'
+            // value = { this.state.room } 
+            />
+        <div
+            className = { props.moderatedRoomServiceUrl
+                ? 'warning-with-link'
+                : 'warning-without-link' }>
+            { props.renderInsecureRoomNameWarning() }
+        </div>
+    </form>
+    );
+}
+
 class WelcomePage extends AbstractWelcomePage {
     /**
      * Default values for {@code WelcomePage} component's properties.
@@ -54,6 +126,7 @@ class WelcomePage extends AbstractWelcomePage {
                 interfaceConfig.GENERATE_ROOMNAMES_ON_WELCOME_PAGE,
             selectedTab: 0
         };
+        console.log(this.state);
 
         /**
          * The HTML Element used as the container for additional content. Used
@@ -109,6 +182,8 @@ class WelcomePage extends AbstractWelcomePage {
 
         // Bind event handlers so they are only bound once per instance.
         this._onFormSubmit = this._onFormSubmit.bind(this);
+        this._onNameSubmit = this._onNameSubmit.bind(this);
+        this.__onConferenceUserName = this._onConferenceUserName.bind(this);
         this._onRoomChange = this._onRoomChange.bind(this);
         this._onConferenceAvailableSlots = this._onConferenceAvailableSlots.bind(this);
         this._onConferenceTimeLimit = this._onConferenceTimeLimit.bind(this);
@@ -212,7 +287,37 @@ class WelcomePage extends AbstractWelcomePage {
                             { t('welcomepage.headerSubtitle')}
                         </span>
                         <div id = 'enter_room'>
-                            <div className = 'enter-room-input-container'>
+                        <div className = 'enter-room-input-container'>
+                            {
+                                this.state.isUserNameSubmitted
+                                ? <RoomDetailsForm
+                                onRoomSubmit={this._onFormSubmit}
+                                onRoomChange={this._onRoomChange}
+                                setRoomInputRef={this._setRoomInputRef}
+                                room={this.state.room}
+                                onConferenceTimeLimit={this._onConferenceTimeLimit}
+                                ></RoomDetailsForm>
+                                : <UserNameForm 
+                                onNameSubmit={this._onNameSubmit} displayName={this.props._settings.displayName}
+                                onChangeName={this._onConferenceUserName}></UserNameForm>
+                            }
+                            
+                        </div>
+                            <button
+                                aria-disabled = 'false'
+                                aria-label = 'Your Name'
+                                className = 'welcome-page-button'
+                                id = 'enter_room_button'
+                                onClick = { this.state.isUserNameSubmitted ? this._onFormSubmit : this._onNameSubmit }
+                                tabIndex = '0'
+                                type = 'button'>
+                                { this.state.isUserNameSubmitted ? t('welcomepage.startMeeting') : t('welcomepage.userName') }
+                            </button>
+                            {/* 
+                            
+                           
+                             */}
+                            {/* <div className = 'enter-room-input-container'>
                                 <form onSubmit = { this._onFormSubmit }>
                                     <input
                                         aria-disabled = 'false'
@@ -286,7 +391,7 @@ class WelcomePage extends AbstractWelcomePage {
                                 tabIndex = '0'
                                 type = 'button'>
                                 { t('welcomepage.startMeeting') }
-                            </button>
+                            </button> */}
                         </div>
 
                         { _moderatedRoomServiceUrl && (
@@ -354,6 +459,11 @@ class WelcomePage extends AbstractWelcomePage {
         if (!this._roomInputRef || this._roomInputRef.reportValidity()) {
             this._onJoin();
         }
+    }
+
+    _onNameSubmit(event) {
+        event.preventDefault();
+        this._onNameFormSubmit();
     }
 
     /**

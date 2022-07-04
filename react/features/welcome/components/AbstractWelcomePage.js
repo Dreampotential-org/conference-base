@@ -87,7 +87,8 @@ export class AbstractWelcomePage<P: Props> extends Component<P, *> {
         conferenceTimeLimit: '',
         conferenceAvailableSlots: undefined,
         socketLinkConnection: undefined,
-        socketLinkUserName: ''
+        socketLinkUserName: '',
+        isUserNameSubmitted: false,
     };
 
     /**
@@ -102,6 +103,7 @@ export class AbstractWelcomePage<P: Props> extends Component<P, *> {
         // Bind event handlers so they are only bound once per instance.
         this._animateRoomnameChanging
             = this._animateRoomnameChanging.bind(this);
+        this._onNameFormSubmit = this._onNameFormSubmit.bind(this);
         this._onJoin = this._onJoin.bind(this);
         this._onRoomChange = this._onRoomChange.bind(this);
         this._onConferenceAvailableSlots = this._onConferenceAvailableSlots.bind(this);
@@ -180,6 +182,20 @@ export class AbstractWelcomePage<P: Props> extends Component<P, *> {
      */
     _doRenderInsecureRoomNameWarning: () => React$Component<any>;
 
+    _onNameFormSubmit: () => void; 
+
+    _onNameFormSubmit() {
+        APP.socket.emit(
+            "saveName",
+            {
+                "name": this.state.socketLinkUserName
+            }
+        )
+        this.setState({
+            isUserNameSubmitted: !this.state.isUserNameSubmitted
+        })
+    }
+
     _onJoin: () => void;
 
     /**
@@ -205,13 +221,6 @@ export class AbstractWelcomePage<P: Props> extends Component<P, *> {
             // may have already been unmounted.
 
             APP.socket.emit(
-                "saveName",
-                {
-                    "name": this.state.socketLinkUserName
-                }
-            )
-
-            APP.socket.emit(
                 "createConference", {
                     "conferenceName": window.location.href.concat(room),
                     "timeLimit": this.state.conferenceTimeLimit,
@@ -220,7 +229,9 @@ export class AbstractWelcomePage<P: Props> extends Component<P, *> {
             )
             APP.socket.emit(
                 "joinRoom",
-                {"room": window.location.href}
+                {
+                    "room": window.location.href
+                }
             );
             const url
                 = 'https://hooks.slack.com/services/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';
@@ -229,7 +240,7 @@ export class AbstractWelcomePage<P: Props> extends Component<P, *> {
                 attachments: [
                     {
                         text: 'Joined Room: '.concat(window.location.href),
-                        author_name: name,
+                        author_name: this.state.socketLinkUserName,
                         color: '#1F18EE'
                     }
                 ]
