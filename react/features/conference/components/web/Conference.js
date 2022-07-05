@@ -105,7 +105,7 @@ type Props = AbstractProps & {
     _showPrejoin: boolean,
 
     dispatch: Function,
-    t: Function
+    t: Function,
 }
 
 /**
@@ -255,8 +255,8 @@ class Conference extends AbstractConference<Props, *> {
                     }
 
                     <CalleeInfoContainer />
-
-                    { _showPrejoin && <Prejoin />}
+                    
+                    { _showPrejoin && !this.props._settings.displayName && <Prejoin />}
                     { _showLobby && <LobbyScreen />}
                 </div>
                 <ParticipantsPane />
@@ -392,6 +392,11 @@ class Conference extends AbstractConference<Props, *> {
 function _mapStateToProps(state) {
     const { backgroundAlpha, mouseMoveCallbackInterval } = state['features/base/config'];
     const { overflowDrawer } = state['features/toolbox'];
+    const displayName = state['features/base/settings'].displayName;
+    var prejoinEnable = isPrejoinPageVisible(state)
+    if (displayName) {
+        prejoinEnable = false
+    }
 
     return {
         ...abstractMapStateToProps(state),
@@ -401,7 +406,7 @@ function _mapStateToProps(state) {
         _overflowDrawer: overflowDrawer,
         _roomName: getConferenceNameForTitle(state),
         _showLobby: getIsLobbyVisible(state),
-        _showPrejoin: isPrejoinPageVisible(state)
+        _showPrejoin: prejoinEnable,
     };
 }
 

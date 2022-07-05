@@ -87,7 +87,7 @@ export class AbstractWelcomePage<P: Props> extends Component<P, *> {
         conferenceTimeLimit: '',
         conferenceAvailableSlots: undefined,
         socketLinkConnection: undefined,
-        socketLinkUserName: '',
+        socketLinkUserName: this.props._settings.displayName,
         isUserNameSubmitted: false,
     };
 
@@ -194,6 +194,7 @@ export class AbstractWelcomePage<P: Props> extends Component<P, *> {
         this.setState({
             isUserNameSubmitted: !this.state.isUserNameSubmitted
         })
+        
     }
 
     _onJoin: () => void;
@@ -230,7 +231,7 @@ export class AbstractWelcomePage<P: Props> extends Component<P, *> {
             APP.socket.emit(
                 "joinRoom",
                 {
-                    "room": window.location.href
+                    "room": window.location.href.concat(room)
                 }
             );
             const url
@@ -239,7 +240,7 @@ export class AbstractWelcomePage<P: Props> extends Component<P, *> {
                 username: 'Conference Base',
                 attachments: [
                     {
-                        text: 'Joined Room: '.concat(window.location.href),
+                        text: 'Joined Room: '.concat(window.location.href.concat(room)),
                         author_name: this.state.socketLinkUserName,
                         color: '#1F18EE'
                     }
@@ -353,7 +354,7 @@ export class AbstractWelcomePage<P: Props> extends Component<P, *> {
  * @returns {Props}
  */
 export function _mapStateToProps(state: Object) {
-
+    
     return {
         _calendarEnabled: isCalendarEnabled(state),
         _enableInsecureRoomNameWarning: state['features/base/config'].enableInsecureRoomNameWarning || false,

@@ -58,7 +58,7 @@ function RoomDetailsForm(props) {
             pattern = { ROOM_NAME_VALIDATE_PATTERN_STR }
             placeholder = { props.roomPlaceholder }
             ref = { props.setRoomInputRef }
-            title = { t('welcomepage.roomNameAllowedChars') }
+            title = { props.t('welcomepage.roomNameAllowedChars') }
             type = 'text'
             value = { props.room } />
         <input
@@ -71,9 +71,9 @@ function RoomDetailsForm(props) {
             // pattern = { ROOM_NAME_VALIDATE_PATTERN_STR }
             placeholder = 'Meeting time limit'
             // ref = { this._setRoomInputRef }
-            title = { t('welcomepage.roomNameAllowedChars') }
+            title = { props.t('welcomepage.roomNameAllowedChars') }
             type = 'text'
-            // value = { this.state.room } 
+            value = { props.conferenceTimeLimit } 
             />
         <input
             aria-disabled = 'false'
@@ -85,9 +85,9 @@ function RoomDetailsForm(props) {
             // pattern = { ROOM_NAME_VALIDATE_PATTERN_STR }
             placeholder = 'Meeting available slots'
             // ref = { this._setRoomInputRef }
-            title = { t('welcomepage.roomNameAllowedChars') }
+            title = { props.t('welcomepage.roomNameAllowedChars') }
             type = 'number'
-            // value = { this.state.room } 
+            value = { props.conferenceAvailableSlots } 
             />
         <div
             className = { props.moderatedRoomServiceUrl
@@ -295,10 +295,16 @@ class WelcomePage extends AbstractWelcomePage {
                                 onRoomChange={this._onRoomChange}
                                 setRoomInputRef={this._setRoomInputRef}
                                 room={this.state.room}
+                                conferenceTimeLimit={this.state.conferenceTimeLimit}
+                                conferenceAvailableSlots={this.state.conferenceAvailableSlots}
                                 onConferenceTimeLimit={this._onConferenceTimeLimit}
+                                onConferenceAvailableSlots={this._onConferenceAvailableSlots}
+                                t={t}
+                                renderInsecureRoomNameWarning={this._renderInsecureRoomNameWarning}
+                                roomPlaceholder={this.state.roomPlaceholder}
                                 ></RoomDetailsForm>
                                 : <UserNameForm 
-                                onNameSubmit={this._onNameSubmit} displayName={this.props._settings.displayName}
+                                onNameSubmit={this._onNameSubmit} displayName={this.state.socketLinkUserName}
                                 onChangeName={this._onConferenceUserName}></UserNameForm>
                             }
                             
