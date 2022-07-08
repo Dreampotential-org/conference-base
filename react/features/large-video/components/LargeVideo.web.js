@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 
 import VideoLayout from '../../../../modules/UI/videolayout/VideoLayout';
 import { Watermarks } from '../../base/react';
+import { MeetingTimer } from '../../base/react'
 import { connect } from '../../base/redux';
 import { setColorAlpha } from '../../base/util';
 import { StageParticipantNameLabel } from '../../display-name';
@@ -140,7 +141,8 @@ class LargeVideo extends Component<Props> {
                 <SharedVideo />
                 <div id = 'etherpad' />
 
-                <Watermarks />
+                {/* <Watermarks /> */}
+                <MeetingTimer />
 
                 <div
                     id = 'dominantSpeaker'
