@@ -32,6 +32,7 @@ import type { AbstractProps } from '../AbstractConference';
 
 import ConferenceInfo from './ConferenceInfo';
 import { default as Notice } from './Notice';
+import { getDisplayName } from '../../../base/settings';
 
 declare var APP: Object;
 declare var interfaceConfig: Object;
@@ -256,7 +257,7 @@ class Conference extends AbstractConference<Props, *> {
 
                     <CalleeInfoContainer />
                     
-                    { _showPrejoin && !this.props._settings.displayName && <Prejoin />}
+                    { _showPrejoin && <Prejoin />}
                     { _showLobby && <LobbyScreen />}
                 </div>
                 <ParticipantsPane />
@@ -392,9 +393,8 @@ class Conference extends AbstractConference<Props, *> {
 function _mapStateToProps(state) {
     const { backgroundAlpha, mouseMoveCallbackInterval } = state['features/base/config'];
     const { overflowDrawer } = state['features/toolbox'];
-    const displayName = state['features/base/settings'].displayName;
     var prejoinEnable = isPrejoinPageVisible(state)
-    if (displayName) {
+    if(getDisplayName(state)){
         prejoinEnable = false
     }
 

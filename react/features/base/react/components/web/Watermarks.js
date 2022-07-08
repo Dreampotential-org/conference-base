@@ -174,6 +174,72 @@ class Watermarks extends Component<Props, State> {
             reactElement = (<div
                 className = 'watermark leftwatermark'
                 style = { style } />);
+            
+        //     timerElement = (
+        //         <div className="clock-container">
+
+
+
+        //     <div className="clock">
+        //     <h1>Pomodoro Timer</h1>
+        //     {/* Controls */}
+        //     <div className="length-controls">
+        //         {/* Control 1 */}
+        //         <div className="length-control">
+        //         <p id="break-label">Break Length</p>
+        //         <div className="length-control-btns">
+        //             <button
+        //             id="break-decrement"
+        //             // onClick={(e) => handleBreakLengthChange(e)}
+        //             >&lt;
+        //             </button>
+        //             <div id="break-length">{Math.floor(123 / 60)}</div>
+        //             <button
+        //             id="break-increment"
+        //             // onClick={(e) => handleBreakLengthChange(e)}
+        //             >&gt;
+        //             </button>
+        //         </div>
+        //         </div>
+
+        //         {/* Control 2 */}
+        //         <div className="length-control">
+        //         <p id="session-label">Session Length</p>
+        //         <div className="length-control-btns">
+        //             <button
+        //             id="session-decrement"
+        //             // onClick={(e) => handleSessionLengthChange(e)}
+        //             >&lt;
+        //             </button>
+        //             <div id="session-length">{123 / 60}</div>
+        //             <button
+        //             id="session-increment"
+        //             // onClick={(e) => handleSessionLengthChange(e)}
+        //             >&gt;
+        //             </button>
+        //         </div>
+        //         </div>
+        //     </div>
+
+        //     {/* Timer */}
+        //     <div className="timer">
+        //         <p id="timer-label">{"Session"}</p>
+        //         {/* <div id="time-left">{formatDisplayTime(timerMinutes)}:{formatDisplayTime(timerSeconds)}</div> */}
+        //     </div>
+
+        //     <div className="timer-control">
+        //         <button
+        //         id="start_stop"
+        //         // onClick={(e) => toggleCountDown()}
+        //         >{true ? 'Stop' : 'Start'}</button>
+        //         <button
+        //         id="reset"
+        //         // onClick={handleResetTimer}
+        //         >Reset</button>
+        //     </div>
+        //     </div>
+        // </div>
+        //     );
 
             if (_logoLink) {
                 reactElement = (
@@ -183,6 +249,7 @@ class Watermarks extends Component<Props, State> {
                         href = { _logoLink }
                         target = '_new'>
                         { reactElement }
+                        {/* { timerElement } */}
                     </a>
                 );
             }
