@@ -73,14 +73,6 @@ const MeetingTimer = () => {
     useEffect(() => {
         clearTimer(getDeadTime());
     }, []);
-  
-    // Another way to call the clearTimer() to start
-    // the countdown is via action event from the
-    // button first we create function to be called
-    // by the button
-    const onClickReset = () => {
-        clearTimer(getDeadTime());
-    }
 
     const style = {
         maxWidth: 140,
@@ -91,7 +83,6 @@ const MeetingTimer = () => {
     return (
         <div className="watermark leftwatermark" style = { style }>
             <h2>{timer}</h2>
-            {/* <button onClick={onClickReset}>Reset</button> */}
         </div>
     )
 }

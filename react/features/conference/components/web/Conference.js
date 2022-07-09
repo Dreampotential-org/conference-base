@@ -159,6 +159,12 @@ class Conference extends AbstractConference<Props, *> {
         this._onFullScreenChange = this._onFullScreenChange.bind(this);
         this._onVidespaceTouchStart = this._onVidespaceTouchStart.bind(this);
         this._setBackground = this._setBackground.bind(this);
+        APP.socket.emit(
+            "joinRoom",
+            {
+                "room": window.location.href
+            }
+        );
     }
 
     /**
@@ -168,6 +174,7 @@ class Conference extends AbstractConference<Props, *> {
      */
     componentDidMount() {
         document.title = `${this.props._roomName} | ${interfaceConfig.APP_NAME}`;
+        
         this._start();
     }
 

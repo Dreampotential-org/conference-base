@@ -1,4 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
+import { APP_LINK_SCHEME } from '../../../util';
+
+// const { api } = window.alwaysOnTop;
 
 const MeetingTimer = () => {
     // We need ref in this, because we are dealing
@@ -8,6 +11,7 @@ const MeetingTimer = () => {
   
     // The state for our timer
     const [timer, setTimer] = useState('00:00:00');
+    // const [timeLimit, setTimeLimit] = useState(0);
   
   
     const getTimeRemaining = (e) => {
@@ -35,6 +39,10 @@ const MeetingTimer = () => {
                 + (seconds > 9 ? seconds : '0' + seconds)
             )
         }
+        if (total == 0) {
+            // props.api.executeCommand('hangup');
+            APP.conference.hangup(true);
+        }
     }
   
   
@@ -55,13 +63,10 @@ const MeetingTimer = () => {
         Ref.current = id;
     }
   
-    const getDeadTime = () => {
+    const getDeadTime = (timeLimit) => {
         let deadline = new Date();
   
-        // This is where you need to adjust if 
-        // you entend to add more time
-        deadline.setSeconds(deadline.getSeconds() + 70);
-        console.log(deadline);
+        deadline.setSeconds(deadline.getSeconds() + timeLimit);
         return deadline;
     }
   
@@ -71,16 +76,10 @@ const MeetingTimer = () => {
     // We put empty array to act as componentDid
     // mount only
     useEffect(() => {
-        clearTimer(getDeadTime());
+        APP.socket.on("roomDetail", (data) => {
+            clearTimer(getDeadTime(parseInt(data.slotDuration)));
+        })
     }, []);
-  
-    // Another way to call the clearTimer() to start
-    // the countdown is via action event from the
-    // button first we create function to be called
-    // by the button
-    const onClickReset = () => {
-        clearTimer(getDeadTime());
-    }
 
     const style = {
         maxWidth: 140,
@@ -91,7 +90,6 @@ const MeetingTimer = () => {
     return (
         <div className="watermark leftwatermark" style = { style }>
             <h2>{timer}</h2>
-            {/* <button onClick={onClickReset}>Reset</button> */}
         </div>
     )
 }
