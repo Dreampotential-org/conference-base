@@ -555,13 +555,13 @@ var config = {
     // enableCalendarIntegration: false,
 
     // Configs for prejoin page.
-    prejoinConfig: {
+    // prejoinConfig: {
         // When 'true', it shows an intermediate page before joining, where the user can configure their devices.
         // This replaces `prejoinPageEnabled`.
-        enabled: false,
+        // enabled: false,
         // List of buttons to hide from the extra join options dropdown.
         // hideExtraJoinButtons: ['no-audio', 'by-phone']
-    },
+    // },
 
     // When 'true', the user cannot edit the display name.
     // (Mainly useful when used in conjuction with the JWT so the JWT name becomes read only.)

@@ -424,12 +424,3 @@ function _setRoom(state, action) {
         room
     });
 }
-
-function _setSocketLinkConnection(state, action) {
-    let { socketLinkConnection } = action;
-
-    return assign(state, {
-        socketLinkConnection
-    });
-}
-
