@@ -556,11 +556,11 @@ var config = {
 
     // Configs for prejoin page.
     // prejoinConfig: {
-    //     // When 'true', it shows an intermediate page before joining, where the user can configure their devices.
-    //     // This replaces `prejoinPageEnabled`.
-    //     enabled: true,
-    //     // List of buttons to hide from the extra join options dropdown.
-    //     hideExtraJoinButtons: ['no-audio', 'by-phone']
+        // When 'true', it shows an intermediate page before joining, where the user can configure their devices.
+        // This replaces `prejoinPageEnabled`.
+        // enabled: false,
+        // List of buttons to hide from the extra join options dropdown.
+        // hideExtraJoinButtons: ['no-audio', 'by-phone']
     // },
 
     // When 'true', the user cannot edit the display name.

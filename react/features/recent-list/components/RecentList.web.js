@@ -5,9 +5,10 @@ import type { Dispatch } from 'redux';
 
 import { translate } from '../../base/i18n';
 import { MeetingsList } from '../../base/react';
+import { SocketRoomsList } from '../../base/react';
 import { connect } from '../../base/redux';
 import { deleteRecentListEntry } from '../actions';
-import { isRecentListEnabled, toDisplayableList } from '../functions';
+import { isRecentListEnabled, toDisplayableList, toDisplayableSocketRoomList } from '../functions';
 
 import AbstractRecentList from './AbstractRecentList';
 
@@ -57,6 +58,9 @@ class RecentList extends AbstractRecentList<Props> {
             = this._getRenderListEmptyComponent.bind(this);
         this._onPress = this._onPress.bind(this);
         this._onItemDelete = this._onItemDelete.bind(this);
+        this.state = {
+            meetingList: []
+        }
     }
 
     _onItemDelete: Object => void;
@@ -69,6 +73,14 @@ class RecentList extends AbstractRecentList<Props> {
      */
     _onItemDelete(entry) {
         this.props.dispatch(deleteRecentListEntry(entry));
+    }
+
+    componentDidMount() {
+        APP.socket.on("rooms", (data) => {
+            this.setState({
+                meetingList: data
+            })
+        })
     }
 
     /**
@@ -85,15 +97,16 @@ class RecentList extends AbstractRecentList<Props> {
             _recentList
         } = this.props;
         const recentList = toDisplayableList(_recentList);
+        const socketRoomList = toDisplayableSocketRoomList(this.state.meetingList);
 
         return (
-            <MeetingsList
-                disabled = { disabled }
-                hideURL = { true }
-                listEmptyComponent = { this._getRenderListEmptyComponent() }
-                meetings = { recentList }
-                onItemDelete = { this._onItemDelete }
-                onPress = { this._onPress } />
+            <SocketRoomsList
+            disabled = { disabled }
+            hideURL = { true }
+            listEmptyComponent = { this._getRenderListEmptyComponent() }
+            meetings = { socketRoomList }
+            onItemDelete = { this._onItemDelete }
+            onPress = { this._onPress } />
         );
     }
 }

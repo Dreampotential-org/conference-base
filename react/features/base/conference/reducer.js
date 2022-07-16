@@ -424,4 +424,3 @@ function _setRoom(state, action) {
         room
     });
 }
-

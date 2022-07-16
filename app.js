@@ -16,6 +16,8 @@ import API from './modules/API';
 import UI from './modules/UI/UI';
 import keyboardshortcut from './modules/keyboardshortcut/keyboardshortcut';
 import translation from './modules/translation/translation';
+import {socket} from "./react/features/service/socket";
+
 
 // Initialize Olm as early as possible.
 if (window.Olm) {
@@ -28,6 +30,7 @@ if (window.Olm) {
 window.APP = {
     API,
     conference,
+    socket,
 
     // Used by do_external_connect.js if we receive the attach data after
     // connect was already executed. status property can be 'initialized',

@@ -137,6 +137,7 @@ export function isJoinByPhoneDialogVisible(state: Object): boolean {
  * @returns {boolean}
  */
 export function isPrejoinPageVisible(state: Object): boolean {
+    
     return navigator.product !== 'ReactNative'
         && state['features/base/config'].prejoinConfig?.enabled
         && state['features/prejoin']?.showPrejoin

@@ -24,6 +24,23 @@ export function toDisplayableList(recentList) {
             }));
 }
 
+export function toDisplayableSocketRoomList(socketRoomList) {
+    return (
+        [ ...socketRoomList ].reverse()
+            .map(item => {
+                return {
+                    slots: item.slots,
+                    // duration: item.duration,
+                    // time: [ item.date ],
+                    // date: item.date,
+                    title: safeDecodeURIComponent(parseURIString(item.room).room),
+                    url: item.room,
+                    people: item.people
+                };
+            })
+    );
+}
+
 /**
  * Returns <tt>true</tt> if recent list is enabled and <tt>false</tt> otherwise.
  *

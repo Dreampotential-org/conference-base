@@ -1283,7 +1283,7 @@
         "go": "GO",
         "goSmall": "GO",
         "headerSubtitle": "Secure and high quality meetings",
-        "headerTitle": "Jitsi Meet",
+        "headerTitle": "Dreampotential Conference",
         "info": "Dial-in info",
         "jitsiOnMobile": "Jitsi on mobile – download our apps and start a meeting from anywhere",
         "join": "CREATE / JOIN",
@@ -1310,6 +1310,7 @@
         "sendFeedback": "Send feedback",
         "startMeeting": "Start meeting",
         "terms": "Terms",
-        "title": "Secure, fully featured, and completely free video conferencing"
+        "title": "Secure, fully featured, and completely free video conferencing",
+        "userName": "Next->"
     }
 }

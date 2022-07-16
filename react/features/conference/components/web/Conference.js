@@ -2,7 +2,6 @@
 
 import _ from 'lodash';
 import React from 'react';
-import io from "socket.io-client";
 
 import VideoLayout from '../../../../../modules/UI/videolayout/VideoLayout';
 import { getConferenceNameForTitle } from '../../../base/conference';
@@ -19,7 +18,6 @@ import { LobbyScreen } from '../../../lobby';
 import { getIsLobbyVisible } from '../../../lobby/functions';
 import { ParticipantsPane } from '../../../participants-pane/components/web';
 import { Prejoin, isPrejoinPageVisible } from '../../../prejoin';
-import { setSocketLinkConnectionObject } from '../../../base/conference';
 import { toggleToolboxVisible } from '../../../toolbox/actions.any';
 import { fullScreenChanged, showToolbox } from '../../../toolbox/actions.web';
 import { JitsiPortal, Toolbox } from '../../../toolbox/components/web';
@@ -33,10 +31,10 @@ import type { AbstractProps } from '../AbstractConference';
 
 import ConferenceInfo from './ConferenceInfo';
 import { default as Notice } from './Notice';
+import { getDisplayName } from '../../../base/settings';
 
 declare var APP: Object;
 declare var interfaceConfig: Object;
-declare var config: Object;
 
 /**
  * DOM events for when full screen mode has changed. Different browsers need
@@ -107,7 +105,7 @@ type Props = AbstractProps & {
     _showPrejoin: boolean,
 
     dispatch: Function,
-    t: Function
+    t: Function,
 }
 
 /**
@@ -160,6 +158,12 @@ class Conference extends AbstractConference<Props, *> {
         this._onFullScreenChange = this._onFullScreenChange.bind(this);
         this._onVidespaceTouchStart = this._onVidespaceTouchStart.bind(this);
         this._setBackground = this._setBackground.bind(this);
+        APP.socket.emit(
+            "joinRoom",
+            {
+                "room": window.location.href
+            }
+        );
     }
 
     /**
@@ -169,20 +173,7 @@ class Conference extends AbstractConference<Props, *> {
      */
     componentDidMount() {
         document.title = `${this.props._roomName} | ${interfaceConfig.APP_NAME}`;
-        console.log("url::", interfaceConfig.SOCKET_HOST);
-        if (interfaceConfig.SOCKET_HOST === undefined) {
-            interfaceConfig.SOCKET_HOST = "http://localhost:4000";
-        }
-        console.log("url::", interfaceConfig.SOCKET_HOST);
-        var socket = io.connect(interfaceConfig.SOCKET_HOST);
-        this.props.dispatch(setSocketLinkConnectionObject(socket));
-        // roomName = this.props._roomName
-        // socket.emit(
-        //     "joinRoom", {
-        //         "room": roomName,
-        //         "timeLimit": 12
-        //     }
-        // );
+        
         this._start();
     }
 
@@ -271,7 +262,7 @@ class Conference extends AbstractConference<Props, *> {
                     }
 
                     <CalleeInfoContainer />
-
+                    
                     { _showPrejoin && <Prejoin />}
                     { _showLobby && <LobbyScreen />}
                 </div>
@@ -408,6 +399,10 @@ class Conference extends AbstractConference<Props, *> {
 function _mapStateToProps(state) {
     const { backgroundAlpha, mouseMoveCallbackInterval } = state['features/base/config'];
     const { overflowDrawer } = state['features/toolbox'];
+    var prejoinEnable = isPrejoinPageVisible(state)
+    if(getDisplayName(state)){
+        prejoinEnable = false
+    }
 
     return {
         ...abstractMapStateToProps(state),
@@ -417,7 +412,7 @@ function _mapStateToProps(state) {
         _overflowDrawer: overflowDrawer,
         _roomName: getConferenceNameForTitle(state),
         _showLobby: getIsLobbyVisible(state),
-        _showPrejoin: isPrejoinPageVisible(state)
+        _showPrejoin: prejoinEnable,
     };
 }
 

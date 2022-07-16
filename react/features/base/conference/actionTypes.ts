@@ -273,5 +273,3 @@ export const SET_ROOM = 'SET_ROOM';
  * }
  */
 export const SET_START_MUTED_POLICY = 'SET_START_MUTED_POLICY';
-
-export const SET_SOCKET_STATE = "SET_SOCKET_STATE";
