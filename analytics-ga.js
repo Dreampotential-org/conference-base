@@ -23,7 +23,6 @@
         ga('create', options.googleAnalyticsTrackingId, 'auto');
         ga('send', 'pageview');
 
-        
         /* eslint-enable */
     }
 

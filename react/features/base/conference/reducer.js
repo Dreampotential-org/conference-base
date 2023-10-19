@@ -106,8 +106,8 @@ ReducerRegistry.register(
                 startVideoMutedPolicy: action.startVideoMutedPolicy
             };
         
-        case SET_SOCKET_STATE:
-            return set(state, 'socketLinkConnection', action.socketLinkConnection);
+            case SET_SOCKET_STATE:
+                return set(state, 'socketLinkConnection', action.socketLinkConnection);
         }
 
         return state;

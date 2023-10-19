@@ -306,7 +306,10 @@ export function joinConference(
         const jitsiTracks = localTracks.map(t => t.jitsiTrack);
 
         const name = getDisplayName(state);
-
+        state['features/base/conference'].socketLinkConnection.emit(
+            "saveName",
+            name
+        );
         console.log('in actions:::', getState()['features/base/conference'])
         
         APP.socket.emit(

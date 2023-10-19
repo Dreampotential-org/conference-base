@@ -264,7 +264,7 @@ var interfaceConfig = {
 
     // No configuration value should follow this line.
 
-    SOCKET_HOST: 'https://socketlink.dreampotential.org'
+    SOCKET_HOST: 'http://localhost:4000'
 };
 
 /* eslint-enable no-unused-vars, no-var, max-len */

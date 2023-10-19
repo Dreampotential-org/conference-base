@@ -115,3 +115,42 @@ source-package:
 	cp css/all.css source_package/jitsi-meet/css && \
 	(cd source_package ; tar cjf ../jitsi-meet.tar.bz2 jitsi-meet) && \
 	rm -rf source_package
+
+
+# Define variables
+NODE_BIN := ./node_modules/.bin
+WEBPACK := $(NODE_BIN)/webpack
+NPM := npm
+
+# Default target
+all: install build
+
+# Install project dependencies
+install:
+	$(NPM) install
+
+# Build the project using Webpack
+build:
+	$(WEBPACK)
+
+# Clean the project
+clean:
+	$(WEBPACK) --config webpack.clean.js
+
+# Define a custom Webpack configuration file
+build-custom:
+	$(WEBPACK) --config webpack.custom.js
+
+# Define a development target
+dev: install
+	$(WEBPACK) --config webpack.dev.js
+
+# Define a production target
+prod: install
+	$(WEBPACK) --config webpack.prod.js
+
+# Define a target for running tests
+test:
+	$(NODE_BIN)/jest
+
+.PHONY: install build clean build-custom dev prod test

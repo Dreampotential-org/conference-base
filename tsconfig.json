@@ -2,8 +2,9 @@
     "include": ["react/features/**/*.ts"],
     "compilerOptions": {
         "allowSyntheticDefaultImports": true,
-        "module": "es6",
-        "target": "es6",
+        "module": "CommonJS",
+        "outDir": "./dist",
+        "target": "ES6",
         "jsx": "react",
         "lib": [ "webworker", "ES2020", "DOM" ],
         "noEmit": false,

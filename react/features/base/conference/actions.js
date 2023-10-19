@@ -61,7 +61,8 @@ import {
     SET_ROOM,
     SET_PENDING_SUBJECT_CHANGE,
     SET_START_MUTED_POLICY,
-    SET_START_REACTIONS_MUTED
+    SET_START_REACTIONS_MUTED,
+    SET_SOCKET_STATE
 } from './actionTypes';
 import {
     AVATAR_URL_COMMAND,
@@ -881,3 +882,16 @@ export function setLocalSubject(localSubject: string) {
         localSubject
     };
 }
+export function setSocketLinkConnection(socketLinkConnection: Object) {
+    return {
+        type: SET_SOCKET_STATE,
+        socketLinkConnection
+    };
+}
+
+export function setSocketLinkConnectionObject(socketObject: Object) {
+    return async function(dispatch: Function) {
+        dispatch(setSocketLinkConnection(socketObject));
+    };
+}
+

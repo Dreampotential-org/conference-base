@@ -33,10 +33,23 @@ function getPerformanceHints(options, size) {
         maxEntrypointSize: size
     };
 }
+module.exports = {
+    // ...
+    entry: './src/index.js', // Adjust the path and filename as needed
+    resolve: {
+        alias: {
+          // Ensure your alias points to the correct 'src' directory
+          '@src': path.resolve(__dirname, 'src'),
+          // Add any other aliases if necessary
+        },
+      },    
+    // ...
+  };
+  
 
 /**
  * Build a BundleAnalyzerPlugin plugin instance for the given bundle name.
- *
+ *  
  * @param {boolean} analyzeBundle - whether the bundle needs to be analyzed for size.
  * @param {string} name - the name of the bundle.
  * @returns {Array} a configured list of plugins.
@@ -101,6 +114,8 @@ function getConfig(options = {}) {
         mode: minimize ? 'production' : 'development',
         module: {
             rules: [ {
+                test: /\.json$/,
+                use: 'json-loader',
                 // Transpile ES2015 (aka ES6) to ES5. Accept the JSX syntax by React
                 // as well.
 
@@ -109,7 +124,7 @@ function getConfig(options = {}) {
                     // Avoid loading babel.config.js, since we only use it for React Native.
                     configFile: false,
 
-                    // XXX The require.resolve bellow solves failures to locate the
+                    // XXX The require.resolve bellow solves failures to locate the 
                     // presets when lib-jitsi-meet, for example, is npm linked in
                     // jitsi-meet.
                     plugins: [
@@ -386,6 +401,7 @@ module.exports = (_env, argv) => {
             entry: {
                 'face-landmarks-worker': './react/features/face-landmarks/faceLandmarksWorker.ts'
             },
+            
             plugins: [
                 ...config.plugins,
                 ...getBundleAnalyzerPlugin(analyzeBundle, 'face-landmarks-worker')
